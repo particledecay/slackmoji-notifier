@@ -4,30 +4,20 @@ import (
 	"github.com/slack-go/slack"
 )
 
+// MessageContent represents the content of a Slack message
 type MessageContent struct {
 	Text     string
 	ImageURL string
 }
 
+// SendMessage sends a message to the specified Slack channel
 func (c *Client) SendMessage(content MessageContent) error {
-	blocks := []slack.Block{
-		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", content.Text, false, false),
-			nil,
-			nil,
-		),
-	}
-
-	if content.ImageURL != "" {
-		blocks = append(blocks, slack.NewImageBlock(content.ImageURL, "New Emoji", "", nil))
-	}
-
-	if c.useWebhook {
-		return slack.PostWebhook(c.webhookURL, &slack.WebhookMessage{
-			Blocks: &slack.Blocks{BlockSet: blocks},
-		})
-	}
-
-	_, _, err := c.api.PostMessage(c.channel, slack.MsgOptionBlocks(blocks...))
+	_, _, err := c.api.PostMessage(
+		c.channel,
+		slack.MsgOptionText(content.Text, false),
+		slack.MsgOptionAttachments(slack.Attachment{
+			ImageURL: content.ImageURL,
+		}),
+	)
 	return err
 }

@@ -17,7 +17,9 @@ type Client struct {
 	SystemPrompt string
 }
 
+// NewClient creates a new ChatGPT client
 func NewClient(apiKey, gptModel, systemPrompt string) *Client {
+	log.Debug().Msgf("creating ChatGPT client with model %s", gptModel)
 	return &Client{
 		Client:       openai.NewClient(apiKey),
 		GPTModel:     gptModel,

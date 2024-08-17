@@ -1,70 +1,76 @@
 package config
 
 import (
+	"errors"
 	"os"
-	"strings"
 
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
+var defaultPrompt = `Generate an edgy, short sentence in modern Gen-Z tone about the given emoji name.
+					 Surround the name with colons (e.g., if 'smiling' is the name, then :smiling: should
+					 be in the sentence), making absolutely sure to include the custom emoji as-written in
+					 the sentence (and you must not include any other emojis). The custom emoji must
+					 be the only emoji in the sentence and cannot be specified without wrapping colons.
+					 You cannot generate a sentence without an emoji. Think more "edgy" and less "corny".
+					 The sentence should attempt to be about the emoji, using the emoji name to make
+					 assumptions about its meaning. Do not remove any characters from the emoji name,
+					 otherwise it will not display properly in Slack.`
+
 type Config struct {
 	Slack struct {
-		WebhookURL string
-		BotToken   string
-		AppToken   string
-		Channel    string
+		BotToken string
+		AppToken string
+		Channel  string
 	}
 	OpenAI struct {
 		APIKey       string
 		Model        string
 		SystemPrompt string
 	}
-	LogLevel zerolog.Level
 }
 
 func New() *Config {
-	config := &Config{
-		LogLevel: zerolog.InfoLevel,
-	}
+	config := &Config{}
 
-	config.Slack.WebhookURL = os.Getenv("SLACK_WEBHOOK_URL")
+	log.Debug().Msg("setting Slack configuration")
 	config.Slack.BotToken = os.Getenv("SLACK_BOT_TOKEN")
 	config.Slack.AppToken = os.Getenv("SLACK_APP_TOKEN")
 	config.Slack.Channel = os.Getenv("SLACK_CHANNEL")
 
+	log.Debug().Msg("setting OpenAI configuration")
 	config.OpenAI.APIKey = os.Getenv("OPENAI_API_KEY")
 	config.OpenAI.Model = os.Getenv("OPENAI_MODEL")
 	if config.OpenAI.Model == "" {
-		config.OpenAI.Model = "gpt-3.5-turbo" // default model
+		log.Debug().Msg("OpenAI Model not set, using default")
+		config.OpenAI.Model = "gpt-3.5-turbo"
 	}
+	log.Debug().Str("model", config.OpenAI.Model).Msg("using OpenAI model")
 	config.OpenAI.SystemPrompt = os.Getenv("OPENAI_SYSTEM_PROMPT")
 	if config.OpenAI.SystemPrompt == "" {
-		config.OpenAI.SystemPrompt = "You are a helpful assistant that generates fun, short sentences using given emojis."
-	}
-
-	if logLevel, err := zerolog.ParseLevel(strings.ToLower(os.Getenv("LOG_LEVEL"))); err == nil {
-		config.LogLevel = logLevel
+		log.Debug().Msg("OpenAI System Prompt not set, using default")
+		config.OpenAI.SystemPrompt = defaultPrompt
 	}
 
 	return config
 }
 
-func (c *Config) SetupLogger() {
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	zerolog.SetGlobalLevel(c.LogLevel)
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "2006-01-02T15:04:05Z07:00"})
-}
-
 func (c *Config) Validate() error {
-	if c.Slack.WebhookURL == "" && (c.Slack.BotToken == "" || c.Slack.AppToken == "") {
-		return log.Error().Msg("Slack configuration is incomplete. Either SLACK_WEBHOOK_URL or both SLACK_BOT_TOKEN and SLACK_APP_TOKEN must be set")
+	if c.Slack.BotToken == "" {
+		log.Error().Msg("SLACK_BOT_TOKEN is not set")
+		return errors.New("SLACK_BOT_TOKEN is not set")
+	}
+	if c.Slack.AppToken == "" {
+		log.Error().Msg("SLACK_APP_TOKEN is not set")
+		return errors.New("SLACK_APP_TOKEN is not set")
 	}
 	if c.Slack.Channel == "" {
-		return log.Error().Msg("SLACK_CHANNEL is not set")
+		log.Error().Msg("SLACK_CHANNEL is not set")
+		return errors.New("SLACK_CHANNEL is not set")
 	}
 	if c.OpenAI.APIKey == "" {
-		return log.Error().Msg("OPENAI_API_KEY is not set")
+		log.Error().Msg("OPENAI_API_KEY is not set")
+		return errors.New("OPENAI_API_KEY is not set")
 	}
 	return nil
 }

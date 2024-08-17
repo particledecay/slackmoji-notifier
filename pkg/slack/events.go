@@ -1,46 +1,50 @@
 package slack
 
 import (
-	"errors"
-
 	"github.com/rs/zerolog/log"
-	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"
 )
 
-func (c *Client) ListenForEvents() error {
-	if c.useWebhook {
-		return errors.New("event listening is not supported when using webhooks")
-	}
+// EventHandler is a function type for handling Slack events
+type EventHandler func(event interface{})
 
-	if c.socketClient == nil {
-		return errors.New("socket mode client is not initialized")
-	}
+// ListenForEvents starts listening for Slack events
+func (c *Client) ListenForEvents() error {
+	c.stopChan = make(chan struct{})
 
 	go func() {
-		for evt := range c.socketClient.Events {
-			switch evt.Type {
-			case socketmode.EventTypeEventsAPI:
-				eventsAPIEvent, ok := evt.Data.(slackevents.EventsAPIEvent)
-				if !ok {
-					log.Error().Msg("Could not type cast the event to EventsAPIEvent")
-					continue
-				}
-				c.socketClient.Ack(*evt.Request)
-
-				switch eventsAPIEvent.Type {
-				case slackevents.CallbackEvent:
-					innerEvent := eventsAPIEvent.InnerEvent
-					switch ev := innerEvent.Data.(type) {
-					case *slackevents.EmojiChangedEvent:
-						if c.eventHandler != nil {
-							c.eventHandler(ev)
-						}
-					}
+		for {
+			select {
+			case <-c.stopChan:
+				return
+			default:
+				if err := c.socketClient.Run(); err != nil {
+					log.Error().Err(err).Msg("failed to run socket client")
+					return
 				}
 			}
 		}
 	}()
 
-	return c.socketClient.Run()
+	go func() {
+		for evt := range c.socketClient.Events {
+			c.handleEvent(evt)
+		}
+	}()
+
+	return nil
+}
+
+// handleEvent processes incoming Slack events
+func (c *Client) handleEvent(evt socketmode.Event) {
+	if c.eventHandler != nil {
+		c.eventHandler(evt)
+	}
+}
+
+// Stop signals the event listener to stop
+func (c *Client) Stop() {
+	if c.stopChan != nil {
+		close(c.stopChan)
+	}
 }

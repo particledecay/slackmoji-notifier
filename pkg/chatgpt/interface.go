@@ -1,5 +1,6 @@
 package chatgpt
 
+// ClientInterface defines the methods that a ChatGPT client should implement
 type ClientInterface interface {
-	SendMessage(prompt string) (string, error)
+	GenerateCompletion(prompt string, streamToStdout bool) (string, error)
 }
