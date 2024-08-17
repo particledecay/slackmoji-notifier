@@ -50,3 +50,5 @@ debug.test
 /vendor/
 *.coverprofile
 *.lcov
+
+.envrc
