@@ -7,15 +7,11 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var defaultPrompt = `Generate an edgy, short sentence in modern Gen-Z tone about the given emoji name.
-					 Surround the name with colons (e.g., if 'smiling' is the name, then :smiling: should
-					 be in the sentence), making absolutely sure to include the custom emoji as-written in
-					 the sentence (and you must not include any other emojis). The custom emoji must
-					 be the only emoji in the sentence and cannot be specified without wrapping colons.
-					 You cannot generate a sentence without an emoji. Think more "edgy" and less "corny".
-					 The sentence should attempt to be about the emoji, using the emoji name to make
-					 assumptions about its meaning. Do not remove any characters from the emoji name,
-					 otherwise it will not display properly in Slack.`
+var defaultPrompt = `Generate an edgy, short sentence in modern Gen-Z tone about the given emoji name,
+					 and attempt to use a modern and humorous pop culture reference. Do not use proper
+					 punctuation, especially periods. Make sure to wrap the emoji name in colons so it
+					 can be properly formatted into a Slack emoji. For example, if the emoji name is
+					 "smile", the included string should be ":smile:". Do not use any other emojis.`
 
 type Config struct {
 	Slack struct {

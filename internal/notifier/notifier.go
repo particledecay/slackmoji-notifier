@@ -2,6 +2,8 @@ package notifier
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -73,7 +75,6 @@ func (n *Notifier) handleSocketModeEvent(event socketmode.Event) {
 			innerEvent := eventsAPIEvent.InnerEvent
 			switch ev := innerEvent.Data.(type) {
 			case *slackevents.EmojiChangedEvent:
-
 				// slack sends emoji changes multiple times for some reason so we ignore older ones
 				eventTime := time.Unix(payload.EventTime, 0)
 				if time.Since(eventTime) > eventThreshold {
@@ -128,10 +129,23 @@ func (n *Notifier) handleNewEmoji(name, value string) {
 
 	log.Debug().Str("sentence", sentence).Msg("generated sentence for new emoji")
 
-	messageText := "New emoji: :" + name + ":\n\n" + sentence
+	// Construct the full-size image URL
+	fullSizeImageURL := value
+	if !strings.Contains(value, "?") {
+		fullSizeImageURL += "?size=512"
+	} else {
+		fullSizeImageURL += "&size=512"
+	}
+
+	messageText := fmt.Sprintf("*NEW EMOJI ADDED!*\n*Example Usage:*\n%s", sentence)
 	messageContent := slack.MessageContent{
-		Text:     messageText,
-		ImageURL: value,
+		Text: messageText,
+		Attachments: []slack.Attachment{
+			{
+				ImageURL: fullSizeImageURL,
+				Text:     name,
+			},
+		},
 	}
 
 	log.Debug().Interface("messageContent", messageContent).Msg("sending message to Slack")

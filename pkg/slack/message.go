@@ -4,10 +4,16 @@ import (
 	"github.com/slack-go/slack"
 )
 
+// Attachment represents an attachment to a Slack message
+type Attachment struct {
+	ImageURL string
+	Text     string
+}
+
 // MessageContent represents the content of a Slack message
 type MessageContent struct {
-	Text     string
-	ImageURL string
+	Text        string
+	Attachments []Attachment
 }
 
 // SendMessage sends a message to the specified Slack channel
@@ -16,7 +22,8 @@ func (c *Client) SendMessage(content MessageContent) error {
 		c.channel,
 		slack.MsgOptionText(content.Text, false),
 		slack.MsgOptionAttachments(slack.Attachment{
-			ImageURL: content.ImageURL,
+			ImageURL: content.Attachments[0].ImageURL,
+			Text:     content.Attachments[0].Text,
 		}),
 	)
 	return err
