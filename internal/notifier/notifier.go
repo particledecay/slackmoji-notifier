@@ -106,7 +106,7 @@ func (n *Notifier) handleNewEmoji(name, value string) {
 	n.knownEmojis[name] = true
 	n.eventsMutex.Unlock()
 
-	log.Debug().Str("emoji", name).Msg("handling new emoji")
+	log.Info().Str("emoji", name).Msg("handling new emoji")
 
 	sentence, err := n.chatGPTClient.GenerateCompletion("emoji name: "+name, false)
 	if err != nil {
