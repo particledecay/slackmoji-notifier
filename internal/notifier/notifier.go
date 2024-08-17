@@ -63,17 +63,6 @@ func (n *Notifier) handleSocketModeEvent(event socketmode.Event) {
 			return
 		}
 
-		eventTime := time.Unix(payload.EventTime, 0)
-		if time.Since(eventTime) > eventThreshold {
-			log.Debug().Str("event_id", payload.EventID).Time("event_time", eventTime).Msg("ignoring old event")
-			return
-		}
-
-		if payload.RetryAttempt > 0 {
-			log.Debug().Str("event_id", payload.EventID).Int("retry_attempt", payload.RetryAttempt).Msg("ignoring retry event")
-			return
-		}
-
 		eventsAPIEvent, ok := event.Data.(slackevents.EventsAPIEvent)
 		if !ok {
 			log.Debug().Msg("event data is not an EventsAPIEvent")
@@ -84,6 +73,29 @@ func (n *Notifier) handleSocketModeEvent(event socketmode.Event) {
 			innerEvent := eventsAPIEvent.InnerEvent
 			switch ev := innerEvent.Data.(type) {
 			case *slackevents.EmojiChangedEvent:
+
+				// slack sends emoji changes multiple times for some reason so we ignore older ones
+				eventTime := time.Unix(payload.EventTime, 0)
+				if time.Since(eventTime) > eventThreshold {
+					log.Debug().
+						Str("event_id", payload.EventID).
+						Time("event_time", eventTime).
+						Str("emoji", ev.Name).
+						Msg("ignoring old event")
+					return
+				}
+
+				// even within the threshold sometimes we get retries, so we ignore those too
+				if payload.RetryAttempt > 0 {
+					log.Debug().
+						Str("event_id", payload.EventID).
+						Int("retry_attempt", payload.RetryAttempt).
+						Str("emoji", ev.Name).
+						Msg("ignoring retry event")
+					return
+				}
+
+				// we only care about new emojis
 				if ev.Subtype == "add" {
 					n.handleNewEmoji(ev.Name, ev.Value)
 				}
