@@ -1,0 +1,49 @@
+# Default values for emoji-notifier.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: particledecay/slackmoji-notifier
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.1.1"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# turns on verbose mode
+verbose: false
+
+slack:
+  channel: "#emoji"
+  botToken: ""
+  appToken: ""
+
+openai:
+  apiKey: ""
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+livenessProbe:
+  exec:
+    command:
+      - /bin/sh
+      - -c
+      - pgrep -f "\bmain\b"
+
+podAnnotations: {}
+podLabels: {}
+podSecurityContext: {}
+securityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

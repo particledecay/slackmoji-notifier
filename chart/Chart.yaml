@@ -1,0 +1,6 @@
+apiVersion: v2
+name: emoji-notifier
+description: A channel notifier for new Slack emojis
+type: application
+version: 0.1.1
+appVersion: "0.1.1"
