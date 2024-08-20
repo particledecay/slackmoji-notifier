@@ -40,6 +40,8 @@ spec:
           env:
             - name: SLACK_CHANNEL
               value: {{ .Values.slack.channel }}
+            - name: OPENAI_MODEL
+              value: {{ .Values.openai.model }}
           envFrom:
             - secretRef:
                 name: {{ include "emoji-notifier.fullname" . }}

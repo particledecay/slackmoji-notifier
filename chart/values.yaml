@@ -23,6 +23,7 @@ slack:
   appToken: ""
 
 openai:
+  model: "gpt-4o"
   apiKey: ""
 
 resources:
