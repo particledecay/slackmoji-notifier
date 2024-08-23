@@ -41,7 +41,7 @@ spec:
             - name: SLACK_CHANNEL
               value: {{ .Values.slack.channel }}
             - name: OPENAI_MODEL
-              value: {{ .Values.openai.model }}
+              value: {{ .Values.openai.model | default "gpt-3.5-turbo" }}
           envFrom:
             - secretRef:
                 name: {{ include "emoji-notifier.fullname" . }}
