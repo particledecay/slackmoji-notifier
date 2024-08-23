@@ -28,31 +28,31 @@ Slackmoji Notifier is a Slack bot that monitors your workspace for new emoji add
 
 Install the chart:
 
-   ```bash
-   helm install slackmoji-notifier ./chart \
-     --set slack.botToken="your-slack-bot-token" \
-     --set slack.appToken="your-slack-app-token" \
-     --set slack.channel="#your-notification-channel" \
-     --set openai.apiKey="your-openai-api-key" \
-     --set openai.model="your-preferred-gpt-model" \
-     --set verbose=true
-   ```
+```sh
+helm install slackmoji-notifier ./chart \
+  --set slack.botToken="your-slack-bot-token" \
+  --set slack.appToken="your-slack-app-token" \
+  --set slack.channel="#your-notification-channel" \
+  --set openai.apiKey="your-openai-api-key" \
+  --set openai.model="your-preferred-gpt-model" \
+  --set verbose=true
+```
 
 ### Run it locally
 
 Clone the repository and install dependencies
 
-    ```bash
-    git clone https://github.com/particledecay/slackmoji-notifier
-    go mod download
-    ```
+```sh
+git clone https://github.com/particledecay/slackmoji-notifier
+go mod download
+```
 
 Build and run the application
 
-    ```bash
-    go build -o slackmoji-notifier .
-    ./slackmoji-notifier
-    ```
+```sh
+go build -o slackmoji-notifier .
+./slackmoji-notifier
+```
 
 ## Configuration
 
