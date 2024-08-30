@@ -39,18 +39,27 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Semantic Release
+        id: semantic
+        uses: go-semantic-release/action@v1
+        with:
+          hooks: goreleaser
+          allow-initial-development-versions: true
+          force-bump-patch-version: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Docker Metadata
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
+            type=raw,value=latest
             type=sha
-            type=semver,pattern={{ version }}
-            type=semver,pattern={{ major }}.{{ minor }}
-            type=semver,pattern={{ major }}
+            type=semver,pattern={{ version }},value=${{ steps.semantic.outputs.version }}
+            type=semver,pattern={{ major }}.{{ minor }},value=${{ steps.semantic.outputs.version }}
+            type=semver,pattern={{ major }},value=${{ steps.semantic.outputs.version }}
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
@@ -64,13 +73,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-
-      - name: Semantic Release
-        id: semantic
-        uses: go-semantic-release/action@v1
-        with:
-          hooks: goreleaser
-          allow-initial-development-versions: true
-          force-bump-patch-version: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
