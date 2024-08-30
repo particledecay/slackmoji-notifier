@@ -3,41 +3,55 @@ package build
 import (
 	"bytes"
 	"fmt"
+	"runtime/debug"
 	"text/template"
 )
 
 var (
 	Version = ""
-	Commit  = ""
 	Date    = ""
 )
 
 const versionTpl = `
-Version:    v{{ .Version }}
+Version:    {{ .Version }}
 SHA:        {{ .Commit }}
 Built On:   {{ .Date }}`
 
+func getStringOrNotAvailable(value string) string {
+	if value != "" {
+		return fmt.Sprintf("v%s", value)
+	} else {
+		return fmt.Sprintf("(n/a)")
+	}
+}
+
+func getCommitSHA() string {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, setting := range info.Settings {
+			if setting.Key == "vcs.revision" && setting.Value != "" {
+				return setting.Value
+			}
+		}
+	}
+
+	return ""
+}
+
 // PrintVersion outputs the short version info
 func PrintVersion() {
-	if Version != "" {
-		fmt.Printf("v%s\n", Version)
-	}
+	fmt.Println(getStringOrNotAvailable(Version))
 }
 
 // PrintLongVersion outputs the full version info
 func PrintLongVersion() error {
-	if Version == "" {
-		return nil
-	}
-
 	data := struct {
 		Version string
 		Commit  string
 		Date    string
 	}{
-		Version: Version,
-		Commit:  Commit,
-		Date:    Date,
+		Version: getStringOrNotAvailable(Version),
+		Commit:  getCommitSHA(),
+		Date:    getStringOrNotAvailable(Date),
 	}
 
 	var tpl bytes.Buffer
