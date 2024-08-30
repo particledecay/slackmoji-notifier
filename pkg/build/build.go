@@ -21,7 +21,7 @@ func getStringOrNotAvailable(value string) string {
 	if value != "" {
 		return fmt.Sprintf("v%s", value)
 	} else {
-		return fmt.Sprintf("(n/a)")
+		return "(n/a)"
 	}
 }
 

@@ -31,7 +31,7 @@ jobs:
           outfile: coverage.lcov
 
       - name: Send test coverage to CodeClimate
-        uses: paambaati/codeclimate-action@v2.6.0
+        uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE }}
         with:
