@@ -40,7 +40,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: particledecay/$(basename $GITHUB_REPOSITORY)
+          images: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
