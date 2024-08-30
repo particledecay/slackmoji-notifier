@@ -1,6 +1,6 @@
 module github.com/particledecay/slackmoji-notifier
 
-go 1.22.2
+go 1.22
 
 require (
 	github.com/rs/zerolog v1.33.0
