@@ -1,0 +1,42 @@
+---
+version: 1
+project_name: slackmoji-notifier
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - binary: slackmoji-notifier
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    ldflags:
+      - -extldflags '-static'
+      - -s -w
+      - -X build.Version={{ .Version }}
+      - -X build.Date={{ .Date }}
+
+archives:
+- name_template: >-
+    {{- .ProjectName }}-
+    {{- tolower .Os }}-
+    {{- if eq .Arch "amd64" }}x86_64
+    {{- else }}{{ .Arch }}{{ end }}-
+    {{- .Version }}
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: desc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'

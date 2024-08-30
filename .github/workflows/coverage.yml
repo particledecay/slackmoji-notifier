@@ -1,0 +1,39 @@
+---
+name: coverage
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  coverage-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.22
+          cache: true
+
+      - name: Install dependencies
+        run: |
+          go mod download
+      - name: Run tests
+        run: |
+          make test
+
+      - name: Convert Go coverage to LCOV
+        uses: jandelgado/gcov2lcov-action@v1.0.0
+        with:
+          infile: coverage.out
+          outfile: coverage.lcov
+
+      - name: Send test coverage to CodeClimate
+        uses: paambaati/codeclimate-action@v2.6.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE }}
+        with:
+          coverageCommand: echo ""
+          coverageLocations: ./coverage.lcov:lcov
