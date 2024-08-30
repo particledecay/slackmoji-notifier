@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "emoji-notifier.fullname" . }}
+  name: {{ include "slackmoji-notifier.fullname" . }}
   labels:
-    {{- include "emoji-notifier.labels" . | nindent 4 }}
+    {{- include "slackmoji-notifier.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "emoji-notifier.selectorLabels" . | nindent 6 }}
+      {{- include "slackmoji-notifier.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -16,7 +16,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "emoji-notifier.labels" . | nindent 8 }}
+        {{- include "slackmoji-notifier.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -39,12 +39,12 @@ spec:
           {{- end }}
           env:
             - name: SLACK_CHANNEL
-              value: {{ .Values.slack.channel }}
+              value: {{ .Values.slack.channel | quote }}
             - name: OPENAI_MODEL
               value: {{ .Values.openai.model | default "gpt-3.5-turbo" }}
           envFrom:
             - secretRef:
-                name: {{ include "emoji-notifier.fullname" . }}
+                name: {{ include "slackmoji-notifier.fullname" . }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           resources:

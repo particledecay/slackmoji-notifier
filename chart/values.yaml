@@ -1,4 +1,4 @@
-# Default values for emoji-notifier.
+# Default values for slackmoji-notifier.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -18,7 +18,7 @@ fullnameOverride: ""
 verbose: false
 
 slack:
-  channel: "#emoji"
+  channel: "#slackmoji"
   botToken: ""
   appToken: ""
 
