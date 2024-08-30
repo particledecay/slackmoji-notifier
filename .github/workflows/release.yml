@@ -45,7 +45,6 @@ jobs:
         with:
           hooks: goreleaser
           allow-initial-development-versions: true
-          force-bump-patch-version: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
