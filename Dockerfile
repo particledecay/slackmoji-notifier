@@ -39,4 +39,5 @@ WORKDIR /app
 COPY --from=builder /app/main .
 
 # Executable
-CMD ["./main", "listen"]
+ENTRYPOINT [ "/app/main" ]
+CMD [ "listen" ]
