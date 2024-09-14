@@ -111,19 +111,20 @@ func (n *Notifier) handleSocketModeEvent(event socketmode.Event) {
 
 func (n *Notifier) handleNewEmoji(name, value string) {
 	n.eventsMutex.Lock()
+	defer n.eventsMutex.Unlock()
+
 	if n.knownEmojis[name] {
-		n.eventsMutex.Unlock()
 		log.Debug().Str("emoji", name).Msg("ignoring known emoji")
 		return
 	}
 	n.knownEmojis[name] = true
-	n.eventsMutex.Unlock()
 
 	log.Info().Str("emoji", name).Msg("handling new emoji")
 
 	sentence, err := n.chatGPTClient.GenerateCompletion("emoji name: "+name, false)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to generate sentence")
+		n.knownEmojis[name] = false
 		return
 	}
 
@@ -152,6 +153,7 @@ func (n *Notifier) handleNewEmoji(name, value string) {
 
 	if err := n.slackClient.SendMessage(messageContent); err != nil {
 		log.Error().Err(err).Msg("failed to send message to Slack")
+		n.knownEmojis[name] = false
 	} else {
 		log.Debug().Msg("message sent successfully to Slack")
 	}
