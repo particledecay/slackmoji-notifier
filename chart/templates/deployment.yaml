@@ -35,6 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.verbose }}
           args:
+            - "listen"
             - "--verbose"
           {{- end }}
           env:
