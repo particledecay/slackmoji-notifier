@@ -15,6 +15,10 @@ Slackmoji Notifier is a Slack bot that monitors your workspace for new emoji add
 - Customizable Slack channel for notifications
 - Easy deployment using Helm charts for Kubernetes
 
+## Example
+
+![Example](assets/example.png)
+
 ## Installation
 
 ### Prerequisites
