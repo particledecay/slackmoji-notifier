@@ -16,7 +16,12 @@ repos:
     rev: v1.4.0
     hooks:
       - id: detect-secrets
-        exclude: go.*,*.md,COMMIT_EDITMSG
+        exclude: |
+          (?x)(
+            go.*|
+            README.md|
+            COMMIT_EDITMSG
+          )
   - repo: https://github.com/TekWizely/pre-commit-golang
     rev: v1.0.0-rc.1
     hooks:
