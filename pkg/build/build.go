@@ -19,7 +19,7 @@ Built On:   {{ .Date }}`
 
 func getStringOrNotAvailable(value string) string {
 	if value != "" {
-		return fmt.Sprintf("v%s", value)
+		return fmt.Sprintf("%s", value)
 	} else {
 		return "(n/a)"
 	}
