@@ -99,6 +99,8 @@ func (n *Notifier) handleSocketModeEvent(event socketmode.Event) {
 				// we only care about new emojis
 				if ev.Subtype == "add" {
 					n.handleNewEmoji(ev.Name, ev.Value)
+				} else if ev.Subtype == "remove" {
+					n.handleRemovedEmoji(ev.Name)
 				}
 			default:
 				log.Debug().Str("type", innerEvent.Type).Msg("unhandled inner event type")
@@ -107,6 +109,24 @@ func (n *Notifier) handleSocketModeEvent(event socketmode.Event) {
 	} else {
 		log.Debug().Str("type", string(event.Type)).Msg("event is not an EventsAPI event, skipping")
 	}
+}
+
+func (n *Notifier) handleRemovedEmoji(name string) {
+	n.eventsMutex.Lock()
+	defer n.eventsMutex.Unlock()
+
+	val, ok := n.knownEmojis[name]
+	if !ok {
+		log.Debug().Str("emoji", name).Msg("ignoring unaccounted emoji")
+		return
+	}
+	if !val {
+		log.Debug().Str("emoji", name).Msg("ignoring already deleted emoji")
+		return
+	}
+
+	log.Info().Str("emoji", name).Msg("removing emoji from known emojis")
+	n.knownEmojis[name] = false
 }
 
 func (n *Notifier) handleNewEmoji(name, value string) {
