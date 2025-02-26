@@ -75,7 +75,7 @@ func (c *Client) GenerateCompletion(message string, streamToStdout bool) (string
 		}
 
 		if streamToStdout {
-			fmt.Printf(response.Choices[0].Delta.Content)
+			fmt.Print(response.Choices[0].Delta.Content)
 		} else {
 			sb.WriteString(response.Choices[0].Delta.Content)
 		}
