@@ -26,11 +26,11 @@ func NewClient(options ...ClientOption) (ClientInterface, error) {
 	}
 
 	if client.api == nil {
-		return nil, errors.New("Slack API client must be provided")
+		return nil, errors.New("slack API client must be provided")
 	}
 
 	if client.socketClient == nil {
-		return nil, errors.New("Slack socket mode client must be provided")
+		return nil, errors.New("slack socket mode client must be provided")
 	}
 
 	if client.channel == "" {
