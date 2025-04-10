@@ -47,7 +47,7 @@ spec:
               value: {{ .Values.openai.model | default "gpt-3.5-turbo" }}
           envFrom:
             - secretRef:
-                name: {{ include "slackmoji-notifier.fullname" . }}
+                name: {{ .Values.secret.secretName | default (include "slackmoji-notifier.fullname" .) }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           resources:

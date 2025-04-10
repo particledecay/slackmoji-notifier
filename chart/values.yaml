@@ -25,7 +25,16 @@ slack:
 
 openai:
   model: "gpt-4o"
-  apiKey: ""
+
+secret:
+  createSecret: true
+  # If specified, use this secret name instead of the generated one
+  secretName: ""
+  slack:
+    botToken: ""
+    appToken: ""
+  openai:
+    apiKey: ""
 
 resources:
   limits:
