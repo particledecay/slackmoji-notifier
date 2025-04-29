@@ -85,16 +85,22 @@ For more configuration options, see the [values.yaml](./values.yaml) file.
 5. Give it the background color '#6c5994'
 6. Click "Save Changes"
 7. Click "Socket Mode" in the left sidebar
-8. Click "Enable Socket Mode" and click "Generate" in the popup (this is your `SLACK_APP_TOKEN`)
-9. Click "OAuth & Permissions" in the left sidebar
-10. Under "Bot Token Scopes" click "Add an OAuth Scope" and give it the following:
-    - `channels:read`
-    - `chat:write`
-    - `chat:write.public`
-    - `emoji:read`
-11. Under "OAuth Tokens" click "Install to <Workspace>" and click "Allow"
-12. Copy the "Bot User OAuth Token" (this is your `SLACK_BOT_TOKEN`)
-13. Run the application locally (or within a Kubernetes cluster) and set `SLACK_CHANNEL` to any public channel
+    1. Click "Enable Socket Mode" and click "Generate" in the popup (this is your `SLACK_APP_TOKEN`)
+10. Click "Event Subscriptions" on the resulting page or the left sidebar
+    1. Click "On" to enable
+    2. Click "Subscribe to bot events"
+    3. Click "Add Bot User Event"
+    4. Select "emoji:changed"
+    5. Click "Save Changes" at the bottom
+11. Click "OAuth & Permissions" in the left sidebar
+    1. Under "Bot Token Scopes" click "Add an OAuth Scope" and give it the following:
+        - `channels:read`
+        - `chat:write`
+        - `chat:write.public`
+        - `emoji:read`
+    2. Under "OAuth Tokens" click "Install to <Workspace>" and click "Allow"
+    3. Copy the "Bot User OAuth Token" (this is your `SLACK_BOT_TOKEN`)
+12. Run the application locally (or within a Kubernetes cluster) and set `SLACK_CHANNEL` to any public channel
 
 ## Why?
 
