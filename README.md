@@ -72,6 +72,7 @@ Key configuration options:
     - `SLACK_CHANNEL`: The Slack channel where notifications will be sent
     - `SLACK_BOT_TOKEN`: Your Slack Bot Token
     - `SLACK_APP_TOKEN`: Your Slack App Token
+    - `SLACK_LOG_ONLY`: Optional boolean. When true log event instead of sending Slack messages. Useful for debugging and lower environments.
     - `OPENAI_API_KEY`: Your OpenAI API Key
 
 For more configuration options, see the [values.yaml](./values.yaml) file.

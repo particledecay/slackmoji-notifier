@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"os"
+	"strconv"
 
 	"github.com/rs/zerolog/log"
 )
@@ -18,6 +19,7 @@ type Config struct {
 		BotToken string
 		AppToken string
 		Channel  string
+		LogOnly  bool
 	}
 	OpenAI struct {
 		APIKey       string
@@ -33,6 +35,12 @@ func New() *Config {
 	config.Slack.BotToken = os.Getenv("SLACK_BOT_TOKEN")
 	config.Slack.AppToken = os.Getenv("SLACK_APP_TOKEN")
 	config.Slack.Channel = os.Getenv("SLACK_CHANNEL")
+	logOnlyValue := os.Getenv("SLACK_LOG_ONLY")
+	if logOnlyValue == "" {
+		logOnlyValue = "false"
+	}
+	logOnly, _ := strconv.ParseBool(logOnlyValue)
+	config.Slack.LogOnly = logOnly
 
 	log.Debug().Msg("setting OpenAI configuration")
 	config.OpenAI.APIKey = os.Getenv("OPENAI_API_KEY")
