@@ -41,6 +41,8 @@ spec:
           env:
             - name: SLACK_CHANNEL
               value: {{ .Values.slack.channel | quote }}
+            - name: SLACK_LOG_ONLY
+              value: {{ .Values.slack.logOnly | default false | quote }}
             - name: OPENAI_MODEL
               value: {{ .Values.openai.model | default "gpt-3.5-turbo" }}
           envFrom:

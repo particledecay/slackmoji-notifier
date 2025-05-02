@@ -23,13 +23,15 @@ type Notifier struct {
 	processedEvents map[string]time.Time
 	knownEmojis     map[string]bool
 	eventsMutex     sync.Mutex
+	logOnly         bool
 }
 
-func New(chatGPTClient chatgpt.ClientInterface) *Notifier {
+func New(chatGPTClient chatgpt.ClientInterface, logOnly bool) *Notifier {
 	n := &Notifier{
 		chatGPTClient:   chatGPTClient,
 		processedEvents: make(map[string]time.Time),
 		knownEmojis:     make(map[string]bool),
+		logOnly:         logOnly,
 	}
 	n.startCleanupRoutine()
 	return n
@@ -140,6 +142,13 @@ func (n *Notifier) handleNewEmoji(name, value string) {
 	n.knownEmojis[name] = true
 
 	log.Info().Str("emoji", name).Msg("handling new emoji")
+
+	if n.logOnly {
+		log.Info().
+			Str("emoji", name).
+			Msg("logOnly mode: would have generated sentence and sent Slack message")
+		return
+	}
 
 	sentence, err := n.chatGPTClient.GenerateCompletion("emoji name: "+name, false)
 	if err != nil {

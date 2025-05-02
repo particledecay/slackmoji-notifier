@@ -39,7 +39,7 @@ func runListen(cmd *cobra.Command, args []string) {
 	chatGPTClient := chatgpt.NewClient(cfg.OpenAI.APIKey, cfg.OpenAI.Model, cfg.OpenAI.SystemPrompt)
 	log.Debug().Msg("ChatGPT client initialized")
 
-	n := notifier.New(chatGPTClient)
+	n := notifier.New(chatGPTClient, cfg.Slack.LogOnly)
 	log.Debug().Msg("notifier created")
 
 	debugEventHandler := func(event interface{}) {

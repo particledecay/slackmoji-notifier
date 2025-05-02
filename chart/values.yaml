@@ -21,6 +21,7 @@ slack:
   channel: "#slackmoji"
   botToken: ""
   appToken: ""
+  # logOnly: true
 
 openai:
   model: "gpt-4o"
