@@ -8,7 +8,7 @@ image:
   repository: particledecay/slackmoji-notifier
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.2.6"
+  tag: "0.4.0"
 
 imagePullSecrets: []
 nameOverride: ""
