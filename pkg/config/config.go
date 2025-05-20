@@ -47,7 +47,7 @@ func New() *Config {
 	config.OpenAI.Model = os.Getenv("OPENAI_MODEL")
 	if config.OpenAI.Model == "" {
 		log.Debug().Msg("OpenAI Model not set, using default")
-		config.OpenAI.Model = "gpt-3.5-turbo"
+		config.OpenAI.Model = "gpt-4o-mini"
 	}
 	log.Debug().Str("model", config.OpenAI.Model).Msg("using OpenAI model")
 	config.OpenAI.SystemPrompt = os.Getenv("OPENAI_SYSTEM_PROMPT")

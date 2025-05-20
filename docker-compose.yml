@@ -1,0 +1,12 @@
+services:
+  slackmoji-notifier:
+    image: particledecay/slackmoji-notifier:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: "dev"  # Replace with actual version
+        BUILD_DATE: ""  # Replace with actual date
+    env_file:
+      - .env
+    restart: unless-stopped

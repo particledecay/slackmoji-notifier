@@ -56,7 +56,12 @@ func (c *Client) GenerateCompletion(message string, streamToStdout bool) (string
 		log.Error().Err(err).Msg("Failed to create chat completion stream")
 		return "", err
 	}
-	defer stream.Close()
+	defer func(stream *openai.ChatCompletionStream) {
+		streamErr := stream.Close()
+		if streamErr != nil {
+			log.Error().Err(streamErr).Msg("Failed to close created chat completion stream")
+		}
+	}(stream)
 
 	for {
 		response, err := stream.Recv()
@@ -70,7 +75,7 @@ func (c *Client) GenerateCompletion(message string, streamToStdout bool) (string
 		}
 
 		if streamToStdout {
-			fmt.Printf(response.Choices[0].Delta.Content)
+			fmt.Print(response.Choices[0].Delta.Content)
 		} else {
 			sb.WriteString(response.Choices[0].Delta.Content)
 		}

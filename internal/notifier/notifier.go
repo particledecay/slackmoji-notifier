@@ -53,15 +53,17 @@ func (n *Notifier) HandleEvent(event interface{}) {
 	}
 }
 
+type SocketModePayload struct {
+	EventID      string `json:"event_id"`
+	EventTime    int64  `json:"event_time"`
+	RetryAttempt int    `json:"retry_attempt"`
+}
+
 func (n *Notifier) handleSocketModeEvent(event socketmode.Event) {
 	log.Debug().Str("type", string(event.Type)).Msg("handling socketmode event")
 
 	if event.Type == socketmode.EventTypeEventsAPI {
-		var payload struct {
-			EventID      string `json:"event_id"`
-			EventTime    int64  `json:"event_time"`
-			RetryAttempt int    `json:"retry_attempt"`
-		}
+		var payload SocketModePayload
 		if err := json.Unmarshal(event.Request.Payload, &payload); err != nil {
 			log.Error().Err(err).Msg("failed to unmarshal payload")
 			return
