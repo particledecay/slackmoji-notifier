@@ -45,6 +45,8 @@ spec:
               value: {{ .Values.slack.logOnly | default false | quote }}
             - name: OPENAI_MODEL
               value: {{ .Values.openai.model | default "gpt-4.1-nano" }}
+            - name: OPENAI_MAX_TOKENS
+              value: {{ .Values.openai.model | default "1024" }}
           envFrom:
             - secretRef:
                 name: {{ .Values.secret.secretName | default (include "slackmoji-notifier.fullname" .) }}

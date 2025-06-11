@@ -24,6 +24,7 @@ type Config struct {
 	OpenAI struct {
 		APIKey       string
 		Model        string
+		MaxTokens    int
 		SystemPrompt string
 	}
 }
@@ -44,11 +45,28 @@ func New() *Config {
 
 	log.Debug().Msg("setting OpenAI configuration")
 	config.OpenAI.APIKey = os.Getenv("OPENAI_API_KEY")
+
 	config.OpenAI.Model = os.Getenv("OPENAI_MODEL")
 	if config.OpenAI.Model == "" {
-		log.Debug().Msg("OpenAI Model not set, using default")
+		log.Info().Msg("OpenAI Model not set, using default")
 		config.OpenAI.Model = "gpt-4.1-nano"
 	}
+
+	var maxTokens int
+	if maxTokensStr := os.Getenv("OPENAI_MAX_TOKENS"); maxTokensStr != "" {
+		parsedMaxTokens, err := strconv.Atoi(maxTokensStr)
+		if err != nil {
+			log.Warn().Err(err).Msg("error parsing max tokens, using default")
+		} else {
+			maxTokens = parsedMaxTokens
+		}
+	}
+	config.OpenAI.MaxTokens = maxTokens
+	if config.OpenAI.MaxTokens == 0 {
+		log.Info().Msg("OpenAI MaxTokens not set, using default")
+		config.OpenAI.MaxTokens = 1024
+	}
+
 	log.Debug().Str("model", config.OpenAI.Model).Msg("using OpenAI model")
 	config.OpenAI.SystemPrompt = os.Getenv("OPENAI_SYSTEM_PROMPT")
 	if config.OpenAI.SystemPrompt == "" {

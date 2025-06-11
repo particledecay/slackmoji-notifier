@@ -14,15 +14,18 @@ import (
 type Client struct {
 	Client       *openai.Client
 	GPTModel     string
+	MaxTokens    int
 	SystemPrompt string
 }
 
 // NewClient creates a new ChatGPT client
-func NewClient(apiKey, gptModel, systemPrompt string) *Client {
-	log.Debug().Msgf("creating ChatGPT client with model %s", gptModel)
+func NewClient(apiKey, gptModel, systemPrompt string, maxTokens int) *Client {
+	log.Info().Msgf("creating ChatGPT client with model %s with %d max tokens", gptModel, maxTokens)
+
 	return &Client{
 		Client:       openai.NewClient(apiKey),
 		GPTModel:     gptModel,
+		MaxTokens:    maxTokens,
 		SystemPrompt: systemPrompt,
 	}
 }
@@ -46,7 +49,7 @@ func (c *Client) GenerateCompletion(message string, streamToStdout bool) (string
 
 	req := openai.ChatCompletionRequest{
 		Model:     c.GPTModel,
-		MaxTokens: 1024,
+		MaxTokens: c.MaxTokens,
 		Stream:    true,
 		Messages:  messagesList,
 	}
