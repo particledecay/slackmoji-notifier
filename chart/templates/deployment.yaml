@@ -43,10 +43,14 @@ spec:
               value: {{ .Values.slack.channel | quote }}
             - name: SLACK_LOG_ONLY
               value: {{ .Values.slack.logOnly | default false | quote }}
+            - name: LLM_PROVIDER
+              value: {{ .Values.llm.provider | quote }}
             - name: OPENAI_MODEL
-              value: {{ .Values.openai.model | default "gpt-5-nano" }}
-            - name: OPENAI_MAX_TOKENS
-              value: {{ .Values.openai.model | default "1024" }}
+              value: {{ .Values.llm.openai.model | default "gpt-5-nano" | quote }}
+            - name: OLLAMA_MODEL
+              value: {{ .Values.llm.ollama.model | default "llama3.2:1b" | quote }}
+            - name: OLLAMA_BASE_URL
+              value: {{ .Values.llm.ollama.baseURL | default "http://localhost:11434" | quote }}
           envFrom:
             - secretRef:
                 name: {{ .Values.secret.secretName | default (include "slackmoji-notifier.fullname" .) }}

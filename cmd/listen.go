@@ -11,8 +11,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/particledecay/slackmoji-notifier/internal/notifier"
-	"github.com/particledecay/slackmoji-notifier/pkg/chatgpt"
 	"github.com/particledecay/slackmoji-notifier/pkg/config"
+	"github.com/particledecay/slackmoji-notifier/pkg/llm"
 	"github.com/particledecay/slackmoji-notifier/pkg/slack"
 )
 
@@ -36,10 +36,27 @@ func runListen(cmd *cobra.Command, args []string) {
 	}
 	log.Debug().Msg("configuration validated successfully")
 
-	chatGPTClient := chatgpt.NewClient(cfg.OpenAI.APIKey, cfg.OpenAI.Model, cfg.OpenAI.SystemPrompt, cfg.OpenAI.MaxTokens)
-	log.Debug().Msg("ChatGPT client initialized")
+	var llmClient llm.LLMClient
+	var err error
 
-	n := notifier.New(chatGPTClient, cfg.Slack.LogOnly)
+	switch cfg.LLMProvider {
+	case "openai":
+		llmClient, err = llm.NewOpenAIClient(cfg.OpenAI.APIKey, cfg.OpenAI.Model, cfg.OpenAI.SystemPrompt, cfg.OpenAI.MaxTokens)
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to create OpenAI client")
+		}
+		log.Debug().Msg("OpenAI client initialized")
+	case "ollama":
+		llmClient, err = llm.NewOllamaClient(cfg.Ollama.Model, cfg.Ollama.BaseURL, cfg.OpenAI.SystemPrompt) // Using OpenAI SystemPrompt for now
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to create Ollama client")
+		}
+		log.Debug().Msg("Ollama client initialized")
+	default:
+		log.Fatal().Msgf("unsupported LLM provider: %s", cfg.LLMProvider)
+	}
+
+	n := notifier.New(llmClient, cfg.Slack.LogOnly)
 	log.Debug().Msg("notifier created")
 
 	debugEventHandler := func(event interface{}) {

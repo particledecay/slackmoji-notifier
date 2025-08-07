@@ -1,6 +1,7 @@
 package notifier
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -11,7 +12,7 @@ import (
 	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"
 
-	"github.com/particledecay/slackmoji-notifier/pkg/chatgpt"
+	"github.com/particledecay/slackmoji-notifier/pkg/llm"
 	"github.com/particledecay/slackmoji-notifier/pkg/slack"
 )
 
@@ -19,16 +20,16 @@ const eventThreshold = 1 * time.Minute
 
 type Notifier struct {
 	slackClient     slack.ClientInterface
-	chatGPTClient   chatgpt.ClientInterface
+	llmClient       llm.LLMClient
 	processedEvents map[string]time.Time
 	knownEmojis     map[string]bool
 	eventsMutex     sync.Mutex
 	logOnly         bool
 }
 
-func New(chatGPTClient chatgpt.ClientInterface, logOnly bool) *Notifier {
+func New(llmClient llm.LLMClient, logOnly bool) *Notifier {
 	n := &Notifier{
-		chatGPTClient:   chatGPTClient,
+		llmClient:       llmClient,
 		processedEvents: make(map[string]time.Time),
 		knownEmojis:     make(map[string]bool),
 		logOnly:         logOnly,
@@ -44,10 +45,12 @@ func (n *Notifier) SetSlackClient(client slack.ClientInterface) {
 func (n *Notifier) HandleEvent(event interface{}) {
 	log.Debug().Interface("event", event).Msgf("notifier received event of type %T", event)
 
+	ctx := context.Background()
+
 	switch evt := event.(type) {
 	case socketmode.Event:
 		log.Debug().Msg("event is a socketmode event")
-		n.handleSocketModeEvent(evt)
+		n.handleSocketModeEvent(ctx, evt)
 	default:
 		log.Debug().Msgf("unhandled event type %T", event)
 	}
@@ -59,7 +62,7 @@ type SocketModePayload struct {
 	RetryAttempt int    `json:"retry_attempt"`
 }
 
-func (n *Notifier) handleSocketModeEvent(event socketmode.Event) {
+func (n *Notifier) handleSocketModeEvent(ctx context.Context, event socketmode.Event) {
 	log.Debug().Str("type", string(event.Type)).Msg("handling socketmode event")
 
 	if event.Type == socketmode.EventTypeEventsAPI {
@@ -102,7 +105,7 @@ func (n *Notifier) handleSocketModeEvent(event socketmode.Event) {
 
 				// we only care about new emojis
 				if ev.Subtype == "add" {
-					n.handleNewEmoji(ev.Name, ev.Value)
+					n.handleNewEmoji(ctx, ev.Name, ev.Value)
 				} else if ev.Subtype == "remove" {
 					n.handleRemovedEmoji(ev.Name)
 				}
@@ -133,7 +136,7 @@ func (n *Notifier) handleRemovedEmoji(name string) {
 	n.knownEmojis[name] = false
 }
 
-func (n *Notifier) handleNewEmoji(name, value string) {
+func (n *Notifier) handleNewEmoji(ctx context.Context, name, value string) {
 	n.eventsMutex.Lock()
 	defer n.eventsMutex.Unlock()
 
@@ -152,7 +155,7 @@ func (n *Notifier) handleNewEmoji(name, value string) {
 		return
 	}
 
-	sentence, err := n.chatGPTClient.GenerateCompletion("emoji name: "+name, false)
+	sentence, err := n.llmClient.GenerateCompletion(ctx, "emoji name: "+name, false)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to generate sentence")
 		n.knownEmojis[name] = false

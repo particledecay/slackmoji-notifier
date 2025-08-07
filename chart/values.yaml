@@ -23,8 +23,13 @@ slack:
   appToken: ""
   # logOnly: true
 
-openai:
-  model: "gpt-5-nano"
+llm:
+  provider: "openai" # openai or ollama
+  openai:
+    model: "gpt-5-nano"
+  ollama:
+    model: "llama3.2:1b"
+    baseURL: "http://localhost:11434"
 
 secret:
   createSecret: true

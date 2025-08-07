@@ -45,6 +45,7 @@ _testmain.go
 /test/run.out
 /test/times.out
 
+.idea/
 /.vscode
 debug.test
 /vendor/
