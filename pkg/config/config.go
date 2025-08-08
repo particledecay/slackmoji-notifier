@@ -49,7 +49,7 @@ func New() *Config {
 	config.OpenAI.Model = os.Getenv("OPENAI_MODEL")
 	if config.OpenAI.Model == "" {
 		log.Info().Msg("OpenAI Model not set, using default")
-		config.OpenAI.Model = "gpt-4.1-nano"
+		config.OpenAI.Model = "gpt-5-nano"
 	}
 
 	var maxTokens int

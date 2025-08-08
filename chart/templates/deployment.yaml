@@ -44,7 +44,7 @@ spec:
             - name: SLACK_LOG_ONLY
               value: {{ .Values.slack.logOnly | default false | quote }}
             - name: OPENAI_MODEL
-              value: {{ .Values.openai.model | default "gpt-4.1-nano" }}
+              value: {{ .Values.openai.model | default "gpt-5-nano" }}
             - name: OPENAI_MAX_TOKENS
               value: {{ .Values.openai.model | default "1024" }}
           envFrom:
