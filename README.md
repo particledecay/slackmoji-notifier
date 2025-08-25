@@ -62,12 +62,9 @@ go build -o slackmoji-notifier .
 
 If you prefer to run Slackmoji Notifier using Docker Compose, follow these steps:
 
-1. Copy `.env.dist` to `.env` and fill in the required values:
-    ```sh
-    cp .env.dist .env
-    ```
+1. Set the required environment variables, either by creating a `.env` file or exporting them directly (see [`config.go`](pkg/config/config.go) for the full list).
 
-2. Start the container:
+2. Launch the container:
     ```sh
     docker-compose up -d
     ```
