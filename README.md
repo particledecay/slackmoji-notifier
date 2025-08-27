@@ -58,6 +58,26 @@ go build -o slackmoji-notifier .
 ./slackmoji-notifier
 ```
 
+### Run it with Docker Compose
+
+If you prefer to run Slackmoji Notifier using Docker Compose, follow these steps:
+
+1. Set the required environment variables, either by creating a `.env` file or exporting them directly (see [`config.go`](pkg/config/config.go) for the full list).
+
+2. Launch the container:
+    ```sh
+    docker-compose up -d
+    ```
+
+This will pull the latest pre-built image and run the application in a Docker container. The bot will automatically restart unless stopped.
+
+#### Manually building the image
+
+If you want to build the Docker image locally instead of using the pre-built one (to test changes), run:
+```sh
+docker-compose up --build -d
+```
+
 ## Configuration
 
 Key configuration options:

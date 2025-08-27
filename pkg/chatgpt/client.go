@@ -14,15 +14,18 @@ import (
 type Client struct {
 	Client       *openai.Client
 	GPTModel     string
+	MaxTokens    int
 	SystemPrompt string
 }
 
 // NewClient creates a new ChatGPT client
-func NewClient(apiKey, gptModel, systemPrompt string) *Client {
-	log.Debug().Msgf("creating ChatGPT client with model %s", gptModel)
+func NewClient(apiKey, gptModel, systemPrompt string, maxTokens int) *Client {
+	log.Info().Msgf("creating ChatGPT client with model %s with %d max tokens", gptModel, maxTokens)
+
 	return &Client{
 		Client:       openai.NewClient(apiKey),
 		GPTModel:     gptModel,
+		MaxTokens:    maxTokens,
 		SystemPrompt: systemPrompt,
 	}
 }
@@ -46,7 +49,7 @@ func (c *Client) GenerateCompletion(message string, streamToStdout bool) (string
 
 	req := openai.ChatCompletionRequest{
 		Model:     c.GPTModel,
-		MaxTokens: 1024,
+		MaxTokens: c.MaxTokens,
 		Stream:    true,
 		Messages:  messagesList,
 	}
@@ -56,7 +59,12 @@ func (c *Client) GenerateCompletion(message string, streamToStdout bool) (string
 		log.Error().Err(err).Msg("Failed to create chat completion stream")
 		return "", err
 	}
-	defer stream.Close()
+	defer func(stream *openai.ChatCompletionStream) {
+		streamErr := stream.Close()
+		if streamErr != nil {
+			log.Error().Err(streamErr).Msg("Failed to close created chat completion stream")
+		}
+	}(stream)
 
 	for {
 		response, err := stream.Recv()
@@ -70,7 +78,7 @@ func (c *Client) GenerateCompletion(message string, streamToStdout bool) (string
 		}
 
 		if streamToStdout {
-			fmt.Printf(response.Choices[0].Delta.Content)
+			fmt.Print(response.Choices[0].Delta.Content)
 		} else {
 			sb.WriteString(response.Choices[0].Delta.Content)
 		}

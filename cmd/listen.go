@@ -36,7 +36,7 @@ func runListen(cmd *cobra.Command, args []string) {
 	}
 	log.Debug().Msg("configuration validated successfully")
 
-	chatGPTClient := chatgpt.NewClient(cfg.OpenAI.APIKey, cfg.OpenAI.Model, cfg.OpenAI.SystemPrompt)
+	chatGPTClient := chatgpt.NewClient(cfg.OpenAI.APIKey, cfg.OpenAI.Model, cfg.OpenAI.SystemPrompt, cfg.OpenAI.MaxTokens)
 	log.Debug().Msg("ChatGPT client initialized")
 
 	n := notifier.New(chatGPTClient, cfg.Slack.LogOnly)

@@ -24,7 +24,7 @@ slack:
   # logOnly: true
 
 openai:
-  model: "gpt-4o"
+  model: "gpt-5-nano"
 
 secret:
   createSecret: true
