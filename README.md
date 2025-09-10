@@ -86,14 +86,22 @@ Key configuration options:
     - `slack.channel`: The Slack channel where notifications will be sent
     - `slack.botToken`: Your Slack Bot Token
     - `slack.appToken`: Your Slack App Token
-    - `openai.apiKey`: Your OpenAI API Key
+    - `llm.provider`: The LLM provider to use (`openai` or `ollama`). Defaults to `openai`.
+    - `llm.openai.model`: The OpenAI model to use (e.g., `gpt-4.1-nano`).
+    - `llm.ollama.model`: The Ollama model to use (e.g., `llama3.2:1b`).
+    - `llm.ollama.baseURL`: The base URL for the Ollama API (e.g., `http://localhost:11434`).
+    - `openai.apiKey`: Your OpenAI API Key (still used for the secret, but model config is under `llm.openai`)
     - `verbose`: Enable verbose logging (default: false)
 - Environment variables
     - `SLACK_CHANNEL`: The Slack channel where notifications will be sent
     - `SLACK_BOT_TOKEN`: Your Slack Bot Token
     - `SLACK_APP_TOKEN`: Your Slack App Token
     - `SLACK_LOG_ONLY`: Optional boolean. When true log event instead of sending Slack messages. Useful for debugging and lower environments.
+    - `LLM_PROVIDER`: The LLM provider to use (`openai` or `ollama`). Defaults to `openai`.
     - `OPENAI_API_KEY`: Your OpenAI API Key
+    - `OPENAI_MODEL`: The OpenAI model to use (e.g., `gpt-4.1-nano`).
+    - `OLLAMA_MODEL`: The Ollama model to use (e.g., `llama3.2:1b`).
+    - `OLLAMA_BASE_URL`: The base URL for the Ollama API (e.g., `http://localhost:11434`).
 
 For more configuration options, see the [values.yaml](./values.yaml) file.
 
