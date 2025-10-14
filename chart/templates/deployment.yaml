@@ -45,8 +45,28 @@ spec:
               value: {{ .Values.slack.logOnly | default false | quote }}
             - name: LLM_PROVIDER
               value: {{ .Values.llm.provider | quote }}
+            {{- if .Values.llm.systemPrompt }}
+            - name: LLM_SYSTEM_PROMPT
+              value: {{ .Values.llm.systemPrompt | quote }}
+            {{- end }}
             - name: OPENAI_MODEL
               value: {{ .Values.llm.openai.model | default "gpt-5-nano" | quote }}
+            {{- if .Values.llm.openai.maxTokens }}
+            - name: OPENAI_MAX_TOKENS
+              value: {{ .Values.llm.openai.maxTokens | quote }}
+            {{- end }}
+            - name: ANTHROPIC_MODEL
+              value: {{ .Values.llm.anthropic.model | default "claude-3.5-haiku" | quote }}
+            {{- if .Values.llm.anthropic.maxTokens }}
+            - name: ANTHROPIC_MAX_TOKENS
+              value: {{ .Values.llm.anthropic.maxTokens | quote }}
+            {{- end }}
+            - name: GOOGLEAI_MODEL
+              value: {{ .Values.llm.googleai.model | default "gemini-2.5-flash-lite" | quote }}
+            {{- if .Values.llm.googleai.maxTokens }}
+            - name: GOOGLEAI_MAX_TOKENS
+              value: {{ .Values.llm.googleai.maxTokens | quote }}
+            {{- end }}
             - name: OLLAMA_MODEL
               value: {{ .Values.llm.ollama.model | default "llama3.2:1b" | quote }}
             - name: OLLAMA_BASE_URL

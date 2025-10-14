@@ -6,12 +6,12 @@
 
 ## Description
 
-Slackmoji Notifier is a Slack bot that monitors your workspace for new emoji additions. When a new emoji is added, it uses OpenAI's GPT model to generate a fun, creative description and sends a notification to a specified Slack channel.
+Slackmoji Notifier is a Slack bot that monitors your workspace for new emoji additions. When a new emoji is added, it uses an LLM provider to generate a fun, creative description and sends a notification to a specified Slack channel.
 
 ## Features
 
 - Real-time monitoring of new emoji additions in your Slack workspace
-- AI-generated descriptions for each new emoji using OpenAI's GPT model
+- AI-generated descriptions for each new emoji using an LLM provider
 - Customizable Slack channel for notifications
 - Easy deployment using Helm charts for Kubernetes
 
@@ -26,7 +26,7 @@ Slackmoji Notifier is a Slack bot that monitors your workspace for new emoji add
 - Kubernetes cluster
 - Helm 3+
 - Slack Bot Token and App Token
-- OpenAI API Key
+- API Key for your chosen LLM provider (OpenAI, Anthropic, Google AI, or Ollama setup)
 
 ### Helm Chart Installation
 
@@ -86,20 +86,36 @@ Key configuration options:
     - `slack.channel`: The Slack channel where notifications will be sent
     - `slack.botToken`: Your Slack Bot Token
     - `slack.appToken`: Your Slack App Token
-    - `llm.provider`: The LLM provider to use (`openai` or `ollama`). Defaults to `openai`.
-    - `llm.openai.model`: The OpenAI model to use (e.g., `gpt-4.1-nano`).
+    - `llm.provider`: The LLM provider to use (`openai`, `anthropic`, `googleai`, or `ollama`). Defaults to `openai`.
+    - `llm.openai.model`: The OpenAI model to use (e.g., `gpt-5-nano`).
+    - `llm.openai.maxTokens`: Maximum tokens for OpenAI responses (default: 1024).
+    - `llm.anthropic.model`: The Anthropic model to use (e.g., `claude-3.5-haiku`).
+    - `llm.anthropic.maxTokens`: Maximum tokens for Anthropic responses (default: 1024).
+    - `llm.googleai.model`: The Google AI model to use (e.g., `gemini-2.5-flash-lite`).
+    - `llm.googleai.maxTokens`: Maximum tokens for Google AI responses (default: 1024).
     - `llm.ollama.model`: The Ollama model to use (e.g., `llama3.2:1b`).
     - `llm.ollama.baseURL`: The base URL for the Ollama API (e.g., `http://localhost:11434`).
-    - `openai.apiKey`: Your OpenAI API Key (still used for the secret, but model config is under `llm.openai`)
+    - `llm.systemPrompt`: Custom system prompt for all LLM providers (optional).
+    - `openai.apiKey`: Your OpenAI API Key
+    - `anthropic.apiKey`: Your Anthropic API Key
+    - `googleai.apiKey`: Your Google AI API Key
     - `verbose`: Enable verbose logging (default: false)
 - Environment variables
     - `SLACK_CHANNEL`: The Slack channel where notifications will be sent
     - `SLACK_BOT_TOKEN`: Your Slack Bot Token
     - `SLACK_APP_TOKEN`: Your Slack App Token
     - `SLACK_LOG_ONLY`: Optional boolean. When true log event instead of sending Slack messages. Useful for debugging and lower environments.
-    - `LLM_PROVIDER`: The LLM provider to use (`openai` or `ollama`). Defaults to `openai`.
+    - `LLM_SYSTEM_PROMPT`: Custom system prompt for all LLM providers (optional).
+    - `LLM_PROVIDER`: The LLM provider to use (`openai`, `anthropic`, `googleai`, or `ollama`). Defaults to `openai`.
     - `OPENAI_API_KEY`: Your OpenAI API Key
-    - `OPENAI_MODEL`: The OpenAI model to use (e.g., `gpt-4.1-nano`).
+    - `OPENAI_MODEL`: The OpenAI model to use (e.g., `gpt-5-nano`).
+    - `OPENAI_MAX_TOKENS`: Maximum tokens for OpenAI responses (default: 1024).
+    - `ANTHROPIC_API_KEY`: Your Anthropic API Key
+    - `ANTHROPIC_MODEL`: The Anthropic model to use (e.g., `claude-3.5-haiku`).
+    - `ANTHROPIC_MAX_TOKENS`: Maximum tokens for Anthropic responses (default: 1024).
+    - `GOOGLEAI_API_KEY`: Your Google AI API Key
+    - `GOOGLEAI_MODEL`: The Google AI model to use (e.g., `gemini-2.5-flash-lite`).
+    - `GOOGLEAI_MAX_TOKENS`: Maximum tokens for Google AI responses (default: 1024).
     - `OLLAMA_MODEL`: The Ollama model to use (e.g., `llama3.2:1b`).
     - `OLLAMA_BASE_URL`: The base URL for the Ollama API (e.g., `http://localhost:11434`).
 

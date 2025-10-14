@@ -14,6 +14,8 @@ builds:
       - darwin
       - linux
       - windows
+    goargs:
+      - "-trimpath"
     ldflags:
       - -extldflags '-static'
       - -s -w
