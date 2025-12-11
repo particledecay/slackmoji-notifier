@@ -4,16 +4,8 @@ default_install_hook_types:
   - pre-commit
   - commit-msg
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
-      - id: check-merge-conflict
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
-        args:
-          - "--markdown-linebreak-ext=md"
   - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
+    rev: v1.5.0
     hooks:
       - id: detect-secrets
         exclude: |
@@ -22,10 +14,6 @@ repos:
             README.md|
             COMMIT_EDITMSG
           )
-  - repo: https://github.com/TekWizely/pre-commit-golang
-    rev: v1.0.0-rc.1
-    hooks:
-      - id: golangci-lint-mod
   - repo: https://github.com/semgrep/semgrep
     rev: v1.97.0
     hooks:
