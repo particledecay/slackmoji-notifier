@@ -21,10 +21,11 @@ ARG VERSION
 ARG BUILD_DATE
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo \
-  -ldflags "-X github.com/particledecay/slackmoji-notifier/pkg/build.Version=${VERSION} \
-  -X github.com/particledecay/slackmoji-notifier/pkg/build.Date=${BUILD_DATE}" \
-  -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -a -installsuffix cgo \
+    -trimpath \
+    -ldflags "-s -w -X github.com/particledecay/slackmoji-notifier/pkg/build.Version=${VERSION} -X github.com/particledecay/slackmoji-notifier/pkg/build.Date=${BUILD_DATE}" \
+    -o main .
 
 # Final stage
 FROM alpine:latest

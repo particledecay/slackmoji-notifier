@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -27,6 +28,46 @@ func init() {
 	rootCmd.AddCommand(listenCmd)
 }
 
+func createLLMClient(cfg *config.Config) (llm.LLMClient, error) {
+	var err error
+	var client llm.LLMClient
+
+	switch cfg.LLMProvider {
+	case "openai":
+		client, err = llm.NewOpenAIClient(cfg.OpenAI.APIKey, cfg.OpenAI.Model, cfg.SystemPrompt, cfg.OpenAI.MaxTokens)
+		if err != nil {
+			return nil, err
+		}
+		log.Debug().Msg("OpenAI client initialized")
+
+	case "ollama":
+		client, err = llm.NewOllamaClient(cfg.Ollama.Model, cfg.Ollama.BaseURL, cfg.SystemPrompt)
+		if err != nil {
+			return nil, err
+		}
+		log.Debug().Msg("Ollama client initialized")
+
+	case "anthropic":
+		client, err = llm.NewAnthropicClient(cfg.Anthropic.APIKey, cfg.Anthropic.Model, cfg.SystemPrompt, cfg.Anthropic.MaxTokens)
+		if err != nil {
+			return nil, err
+		}
+		log.Debug().Msg("Anthropic client initialized")
+
+	case "googleai":
+		client, err = llm.NewGoogleAIClient(cfg.GoogleAI.APIKey, cfg.GoogleAI.Model, cfg.SystemPrompt, cfg.GoogleAI.MaxTokens)
+		if err != nil {
+			return nil, err
+		}
+		log.Debug().Msg("GoogleAI client initialized")
+
+	default:
+		return nil, fmt.Errorf("unsupported LLM provider: %s", cfg.LLMProvider)
+	}
+
+	return client, nil
+}
+
 func runListen(cmd *cobra.Command, args []string) {
 	log.Debug().Msg("starting listen command")
 
@@ -36,24 +77,9 @@ func runListen(cmd *cobra.Command, args []string) {
 	}
 	log.Debug().Msg("configuration validated successfully")
 
-	var llmClient llm.LLMClient
-	var err error
-
-	switch cfg.LLMProvider {
-	case "openai":
-		llmClient, err = llm.NewOpenAIClient(cfg.OpenAI.APIKey, cfg.OpenAI.Model, cfg.OpenAI.SystemPrompt, cfg.OpenAI.MaxTokens)
-		if err != nil {
-			log.Fatal().Err(err).Msg("failed to create OpenAI client")
-		}
-		log.Debug().Msg("OpenAI client initialized")
-	case "ollama":
-		llmClient, err = llm.NewOllamaClient(cfg.Ollama.Model, cfg.Ollama.BaseURL, cfg.OpenAI.SystemPrompt) // Using OpenAI SystemPrompt for now
-		if err != nil {
-			log.Fatal().Err(err).Msg("failed to create Ollama client")
-		}
-		log.Debug().Msg("Ollama client initialized")
-	default:
-		log.Fatal().Msgf("unsupported LLM provider: %s", cfg.LLMProvider)
+	llmClient, err := createLLMClient(cfg)
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to create LLM client")
 	}
 
 	n := notifier.New(llmClient, cfg.Slack.LogOnly)
