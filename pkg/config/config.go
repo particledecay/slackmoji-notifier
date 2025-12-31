@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 )
@@ -22,11 +23,13 @@ const (
 	defaultSlackLogOnly       = "false"
 )
 
-const defaultSystemPrompt = `Generate an edgy, short sentence in modern Gen-Z tone about the given emoji name,
-					 and attempt to use a modern and humorous pop culture reference. Do not use proper
-					 punctuation, especially periods. Make sure to wrap the exact emoji name as-provided
-					 in colons so it can be properly formatted into a Slack emoji. For example, if the
-					 emoji name is "smile", the included string should be ":smile:". Don't use other emojis.`
+const defaultSystemPrompt = `
+Generate an edgy, short sentence in modern Gen-Z tone about the given emoji name,
+and attempt to use a modern and humorous pop culture reference. Do not use proper
+punctuation, especially periods. Make sure to wrap the exact emoji name as-provided
+in colons so it can be properly formatted into a Slack emoji. For example, if the
+emoji name is "smile", the included string should be ":smile:". Don't use other emojis.
+`
 
 type Config struct {
 	Slack struct {
@@ -76,7 +79,7 @@ func New() *Config {
 
 	log.Debug().Msg("setting LLM configuration")
 	config.LLMProvider = getStringEnvOrDefault("LLM_PROVIDER", defaultLLMProvider)
-	config.SystemPrompt = getStringEnvOrDefault("LLM_SYSTEM_PROMPT", defaultSystemPrompt)
+	config.SystemPrompt = strings.TrimSpace(getStringEnvOrDefault("LLM_SYSTEM_PROMPT", defaultSystemPrompt))
 
 	switch config.LLMProvider {
 	case "openai":
