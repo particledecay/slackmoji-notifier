@@ -103,10 +103,10 @@ func (n *Notifier) handleSocketModeEvent(ctx context.Context, event socketmode.E
 					return
 				}
 
-				// we only care about new emojis
-				if ev.Subtype == "add" {
+				switch ev.Subtype {
+				case "add":
 					n.handleNewEmoji(ctx, ev.Name, ev.Value)
-				} else if ev.Subtype == "remove" {
+				case "remove":
 					n.handleRemovedEmoji(ev.Name)
 				}
 			default:
