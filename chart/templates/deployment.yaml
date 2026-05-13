@@ -56,7 +56,7 @@ spec:
               value: {{ .Values.llm.openai.maxTokens | quote }}
             {{- end }}
             - name: ANTHROPIC_MODEL
-              value: {{ .Values.llm.anthropic.model | default "claude-3.5-haiku" | quote }}
+              value: {{ .Values.llm.anthropic.model | default "claude-haiku-4-5-20251001" | quote }}
             {{- if .Values.llm.anthropic.maxTokens }}
             - name: ANTHROPIC_MAX_TOKENS
               value: {{ .Values.llm.anthropic.maxTokens | quote }}
@@ -76,6 +76,8 @@ spec:
                 name: {{ .Values.secret.secretName | default (include "slackmoji-notifier.fullname" .) }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}

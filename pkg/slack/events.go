@@ -6,7 +6,7 @@ import (
 )
 
 // EventHandler is a function type for handling Slack events
-type EventHandler func(event interface{})
+type EventHandler func(event any)
 
 // ListenForEvents starts listening for Slack events
 func (c *Client) ListenForEvents() error {
@@ -27,8 +27,16 @@ func (c *Client) ListenForEvents() error {
 	}()
 
 	go func() {
-		for evt := range c.socketClient.Events {
-			c.handleEvent(evt)
+		for {
+			select {
+			case <-c.stopChan:
+				return
+			case evt, ok := <-c.socketClient.Events:
+				if !ok {
+					return
+				}
+				c.handleEvent(evt)
+			}
 		}
 	}()
 

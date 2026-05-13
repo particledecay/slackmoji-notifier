@@ -85,7 +85,7 @@ func runListen(cmd *cobra.Command, args []string) {
 	n := notifier.New(llmClient, cfg.Slack.LogOnly)
 	log.Debug().Msg("notifier created")
 
-	debugEventHandler := func(event interface{}) {
+	debugEventHandler := func(event any) {
 		log.Debug().Interface("event", event).Msg("received Slack event")
 		n.HandleEvent(event)
 	}
@@ -130,6 +130,8 @@ func runListen(cmd *cobra.Command, args []string) {
 
 	slackClient.Stop()
 	log.Debug().Msg("Slack client stopped")
+	n.Stop()
+	log.Debug().Msg("notifier stopped")
 
 	select {
 	case <-shutdownCtx.Done():

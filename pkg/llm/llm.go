@@ -18,7 +18,9 @@ type LLMClient interface {
 }
 
 // generateContentWithLLM is a helper function that handles the common logic for generating content
-func generateContentWithLLM(ctx context.Context, llm interface{ GenerateContent(ctx context.Context, messages []llms.MessageContent, options ...llms.CallOption) (*llms.ContentResponse, error) }, systemPrompt, message string, maxTokens int, streamToStdout bool, providerName string) (string, error) {
+func generateContentWithLLM(ctx context.Context, llm interface {
+	GenerateContent(ctx context.Context, messages []llms.MessageContent, options ...llms.CallOption) (*llms.ContentResponse, error)
+}, systemPrompt, message string, maxTokens int, streamToStdout bool, providerName string) (string, error) {
 	var sb strings.Builder
 
 	messageContents := []llms.MessageContent{

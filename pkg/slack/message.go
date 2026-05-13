@@ -18,13 +18,13 @@ type MessageContent struct {
 
 // SendMessage sends a message to the specified Slack channel
 func (c *Client) SendMessage(content MessageContent) error {
-	_, _, err := c.api.PostMessage(
-		c.channel,
-		slack.MsgOptionText(content.Text, false),
-		slack.MsgOptionAttachments(slack.Attachment{
+	opts := []slack.MsgOption{slack.MsgOptionText(content.Text, false)}
+	if len(content.Attachments) > 0 {
+		opts = append(opts, slack.MsgOptionAttachments(slack.Attachment{
 			ImageURL: content.Attachments[0].ImageURL,
 			Text:     content.Attachments[0].Text,
-		}),
-	)
+		}))
+	}
+	_, _, err := c.api.PostMessage(c.channel, opts...)
 	return err
 }

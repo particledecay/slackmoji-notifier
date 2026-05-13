@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.25-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 # Install git and SSL certificates
 RUN apk update && apk add --no-cache git ca-certificates
@@ -38,6 +38,9 @@ WORKDIR /app
 
 # Copy the binary from the build stage
 COPY --from=builder /app/main .
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD kill -0 1 || exit 1
 
 # Executable
 ENTRYPOINT [ "/app/main" ]
